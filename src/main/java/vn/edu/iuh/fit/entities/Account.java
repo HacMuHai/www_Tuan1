@@ -62,8 +62,8 @@ public class Account {
     }
 
 
-    public int getStatus() {
-        return status.getValue();
+    public Status getStatus() {
+        return status;
     }
 
     public void setStatus(Status status) {

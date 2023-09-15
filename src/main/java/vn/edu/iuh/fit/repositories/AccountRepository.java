@@ -21,7 +21,7 @@ public class AccountRepository{
             statement.setString(3,account.getPassword());
             statement.setString(4,account.getEmail());
             statement.setString(5,account.getPhone());
-            statement.setInt(6,account.getStatus());
+            statement.setInt(6,account.getStatus().getValue());
 
             return  statement.executeUpdate() > 0;
         }catch (SQLException e){
@@ -39,7 +39,7 @@ public class AccountRepository{
             statement.setString(2,account.getPassword());
             statement.setString(3,account.getEmail());
             statement.setString(4,account.getPhone());
-            statement.setInt(5,account.getStatus());
+            statement.setInt(5,account.getStatus().getValue());
             statement.setString(6,account.getAccount_id());
 
             return  statement.executeUpdate() > 0;

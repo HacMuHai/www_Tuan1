@@ -3,41 +3,41 @@ package vn.edu.iuh.fit.entities;
 import java.util.Objects;
 
 public class Role {
-    private String role_id;
-    private String role_name;
+    private String roleId;
+    private String roleName;
     private String description;
-    private short status;
+    private Status status;
 
-    public Role(String role_id) {
-        this.role_id = role_id;
+    public Role(String roleId) {
+        this.roleId = roleId;
     }
 
-    public String role_id() {
-        return role_id;
+    public String getRoleId() {
+        return roleId;
     }
 
-    public void setStatus(short status) {
-        this.status = status;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public short status() {
-        return status;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public String description() {
-        return description;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setRole_name(String role_name) {
-        this.role_name = role_name;
-    }
-
-    public String role_name() {
-        return role_name;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -45,19 +45,19 @@ public class Role {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(role_id, role.role_id);
+        return Objects.equals(roleId, role.roleId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(role_id);
+        return Objects.hash(roleId);
     }
 
     @Override
     public String toString() {
         return "Role{" +
-                "role_id='" + role_id + '\'' +
-                ", role_name='" + role_name + '\'' +
+                "role_id='" + roleId + '\'' +
+                ", role_name='" + roleName + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';
