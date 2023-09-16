@@ -16,7 +16,7 @@ public class RoleRepository {
 
     public boolean insert(Role role) {
         String sql = "INSERT role VALUES(?,?,?,?)";
-        try(PreparedStatement statement = connection.prepareStatement(sql)){
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, role.getRoleId());
             statement.setString(2, role.getRoleName());
             statement.setString(3, role.getDescription());
@@ -28,10 +28,11 @@ public class RoleRepository {
         }
     }
 
+
     public boolean update(Role role) {
         String sql = "UPDATE role SET role_name = ?, DESCRIPTION = ?, status = ?\n" +
                 "WHERE role_id = ?";
-        try(PreparedStatement statement = connection.prepareStatement(sql)){
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, role.getRoleName());
             statement.setString(2, role.getDescription());
             statement.setInt(3, role.getStatus().getValue());
@@ -47,7 +48,7 @@ public class RoleRepository {
         String sql = "DELETE FROM role WHERE account_id= ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id);
-            return statement.executeUpdate()>0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

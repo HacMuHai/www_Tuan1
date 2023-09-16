@@ -11,7 +11,7 @@ public class ConnectDB {
 
     public ConnectDB() throws ClassNotFoundException, SQLException {
         Class.forName("org.mariadb.jdbc.Driver");
-        con = DriverManager.getConnection("mydb","root","sapassword");
+        con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/mydb", "root", "sapassword");
         System.out.println("Connect successfull....");
     }
 
