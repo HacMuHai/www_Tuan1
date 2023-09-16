@@ -6,12 +6,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import vn.edu.iuh.fit.entities.Account;
 import vn.edu.iuh.fit.services.AccountService;
+import vn.edu.iuh.fit.services.LogService;
 import vn.edu.iuh.fit.services.imp.AccountServiceImp;
+import vn.edu.iuh.fit.services.imp.LogServiceImp;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 @WebServlet(urlPatterns = {"/controllerServlet", "/control"})
 public class ControllerServlet extends HttpServlet {
@@ -36,37 +41,95 @@ public class ControllerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
+        System.out.println("action: "+action);
+
         PrintWriter out = resp.getWriter();
+
+            switch (action){
+                case "login":
+                    login(req,resp);
+                    break;
+                case "LOG OUT":
+                    logout(req,resp);
+                    break;
+            }
+
+    }
+
+    protected void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
+            RequestDispatcher requestDispatcher = null;
             AccountService accountService = new AccountServiceImp();
+            LogService logService = new LogServiceImp();
+
             String username = req.getParameter("username");
             String password = req.getParameter("password");
             int status = accountService.login(username, password);
-            System.out.println(status);
+            System.out.println("status: "+status);
+
+            String row ="";
+            int i;
+            int logid;
             switch (status) {
                 case 1:
-                    resp.setContentType("text/html");
-                    out.println("<html><body>");
-                    out.println("<h1>" + "admin" + "</h1>");
-                    out.println("</body></html>");
-//                    resp.sendRedirect("/web/login.jsp");
+                    List<Account> accounts = accountService.getAll();
+                    System.out.println("Admin: "+accounts.size());
+                    row = "";
+                    i=0;
+                    for(Account value:accounts){
+                        row += "<tr>" +
+                                "<td>" + ++i + "</td>" +
+                                "<td>" + value.getAccount_id() + "</td>" +
+                                "<td>" + value.getFull_name() + "</td>" +
+                                "<td><input class=\"edit-input\" type=\"password\" value=\"" + value.getPassword() + "\"></td>" +
+                                "<td>"+ value.getEmail()  +"</td>" +
+                                "<td>" + value.getPhone() + "</td>" +
+                                "<td>" +
+                                "<input type=\"checkbox\" name=\"selectRow\">" +
+                                "</td>" +
+                                "</tr>";
+                    }
+                    logid = logService.insert(username,"");
+                    req.setAttribute("rows",row);
+                    req.setAttribute("logId",logid);
+                    requestDispatcher = req.getRequestDispatcher("/web/admin.jsp");
+                    requestDispatcher.include(req,resp);
                     break;
                 case 0:
-                    RequestDispatcher requestDispatcher = req.getRequestDispatcher("/web/login.jsp");
+                    requestDispatcher = req.getRequestDispatcher("/web/login.jsp");
                     requestDispatcher.include(req,resp);
-                   break;
+                    break;
                 case -1:
-                    resp.setContentType("text/html");
-                    out.println("<html><body>");
-                    out.println("<h1>" + "user" + "</h1>");
-                    out.println("</body></html>");
-//                    resp.sendRedirect("/web/login.jsp");
+                    Account account = accountService.getOne(username);
+                    System.out.println("user: " + account.getAccount_id());
+                    String role = accountService.isAdmin(account.getAccount_id())? "administrator" : "user";
+
+                    req.setAttribute("account",account);
+                    req.setAttribute("role",role);
+                    logid = logService.insert(username,"");
+                    req.setAttribute("logId",logid);
+                    requestDispatcher = req.getRequestDispatcher("/web/user.jsp");
+                    requestDispatcher.include(req,resp);
                     break;
 
             }
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-
     }
+
+    protected void logout(HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException{
+        String hidden=req.getParameter("hiddenValue");
+        System.out.println(hidden);
+        long idLog = Integer.parseInt(hidden);
+        try {
+            LogService logService = new LogServiceImp();
+            logService.update(idLog,"");
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/web/login.jsp");
+            requestDispatcher.include(req,resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

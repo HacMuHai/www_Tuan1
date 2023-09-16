@@ -92,8 +92,8 @@
             <input type="password" id="password" name="password" required>
         </div>
         <div class="button-container">
-            <button class="login-button">Login</button>
-            <button class="register-button">Register</button>
+            <button class="login-button" name="action" value="login">Login</button>
+            <button class="register-button" name="action" value="register">Register</button>
         </div>
     </form>
 </div>

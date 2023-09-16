@@ -15,6 +15,14 @@ public class Log {
         this.accountId = account_id;
     }
 
+    public Log(long id, String accountId, Date loginTime, Date logoutTime, String notes) {
+        this.id = id;
+        this.accountId = accountId;
+        this.loginTime = loginTime;
+        this.logoutTime = logoutTime;
+        this.notes = notes;
+    }
+
     public long getId() {
         return id;
     }

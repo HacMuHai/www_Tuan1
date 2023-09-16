@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountRepository {
     private Connection connection;
@@ -53,6 +55,23 @@ public class AccountRepository {
 
     }
 
+    public List<Account> getAll() throws SQLException {
+        String sql = "SELECT * FROM account";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet rs = statement.executeQuery();
+        List<Account> list = new ArrayList<>();
+        while (rs.next()) {
+            list.add(new Account(rs.getString("account_id"),
+                    rs.getString("full_name"),
+                    rs.getString("password"),
+                    rs.getString("email"),
+                    rs.getString("phone"),
+                    Status.values()[rs.getInt("status")]));
+        }
+        return list;
+
+    }
+
     public Account getOne(String id) throws SQLException {
         String sql = "SELECT * FROM account WHERE account_id = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
@@ -72,7 +91,6 @@ public class AccountRepository {
 
 
     public int login(String id, String password) throws SQLException {
-        String sql = "SELECT * FROM account WHERE account_id = ? AND password = ? AND status = 1";
         Account account = getOne(id);
         if (account.getPassword().contentEquals(password)) {
             if (isAdmin(id))
@@ -83,7 +101,7 @@ public class AccountRepository {
         }
     }
 
-    private boolean isAdmin(String acountID) throws SQLException {
+    public boolean isAdmin(String acountID) throws SQLException {
         String sql = "SELECT * FROM grant_access \n" +
                 "\tWHERE account_id = ? AND is_grant = 1 \n" +
                 "\t\t\tAND role_id IN (SELECT role_id FROM role WHERE role_name = 'administrator')";
