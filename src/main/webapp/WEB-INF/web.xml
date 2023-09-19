@@ -12,7 +12,7 @@
         <servlet-name>controllerServlet</servlet-name>
         <url-pattern>/web</url-pattern>
     </servlet-mapping>
-    <welcome-file-list>
-        <welcome-file>/web/login.jsp</welcome-file>
-    </welcome-file-list>
+<!--    <welcome-file-list>-->
+<!--        <welcome-file>/web/login.jsp</welcome-file>-->
+<!--    </welcome-file-list>-->
 </web-app>

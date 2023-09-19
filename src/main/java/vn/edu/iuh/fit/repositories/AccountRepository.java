@@ -48,7 +48,9 @@ public class AccountRepository {
     }
 
     public boolean delete(String id) throws SQLException {
-        String sql = "DELETE account WHERE account_id = ?";
+        String sql =  "UPDATE account\n" +
+                "SET `status` = -1\n" +
+                "WHERE account_id = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, id);
         return statement.executeUpdate() > 0;

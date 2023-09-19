@@ -45,7 +45,8 @@ public class RoleRepository {
     }
 
     public boolean delete(String id) {
-        String sql = "DELETE FROM role WHERE account_id= ?";
+        String sql = "UPDATE role SET status = -1\n" +
+                "WHERE role_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id);
             return statement.executeUpdate() > 0;
