@@ -2,16 +2,17 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
+<%
+    Account account = (Account) request.getAttribute("account");
+%>
 <head>
     <title>Page user</title>
     <link rel="stylesheet" href="css/user.css">
 </head>
 
 <body>
-<%
-    Account account = (Account) request.getAttribute("account");
-%>
-<h1>Page User</h1>
+
+<h1>Page User <%=account.getAccount_id()%></h1>
 <div style="border: 2px #333 solid; width: 300px;">
     <div class="data-container">
         <label for="userName">Account ID:</label>
