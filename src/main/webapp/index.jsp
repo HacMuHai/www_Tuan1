@@ -8,6 +8,6 @@
 <h1><%= "Hello World!" %>
 </h1>
 <br/>
-<a href="/web/login.jsp">/web?action=login</a>
+<h1><a href="<%= request.getContextPath()%>/web?action=login">Click me to login!</a></h1>
 </body>
 </html>

@@ -26,7 +26,7 @@ public class ControllerServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         if (action.equalsIgnoreCase("login")) {
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/web/login.jsp");
+            RequestDispatcher dispatcher = req.getRequestDispatcher("login.jsp");
             dispatcher.include(req, resp);
         } else {
             resp.setContentType("text/html");
@@ -36,21 +36,25 @@ public class ControllerServlet extends HttpServlet {
         }
     }
 
-
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
         System.out.println("action: "+action);
 
         PrintWriter out = resp.getWriter();
-
             switch (action){
                 case "login":
                     login(req,resp);
                     break;
                 case "LOG OUT":
                     logout(req,resp);
+                    break;
+                case "aminUPDATE":
+                    req.getRequestDispatcher("index.jsp").forward(req, resp);
+                    break;
+                case "UPDATE":
+                    req.getSession().setAttribute("allowPasswordUpdate",true);
+                    login(req,resp);
                     break;
             }
 
@@ -89,14 +93,15 @@ public class ControllerServlet extends HttpServlet {
                                 "</td>" +
                                 "</tr>";
                     }
-                    logid = logService.insert(username,"");
+                    logid = logService.insert(username,"login");
                     req.setAttribute("rows",row);
                     req.setAttribute("logId",logid);
-                    requestDispatcher = req.getRequestDispatcher("/web/admin.jsp");
+                    requestDispatcher = req.getRequestDispatcher("admin.jsp");
                     requestDispatcher.include(req,resp);
                     break;
                 case 0:
-                    requestDispatcher = req.getRequestDispatcher("/web/login.jsp");
+                    req.setAttribute("loginError", "Tên đăng nhập hoặc mật khẩu không đúng");
+                    requestDispatcher = req.getRequestDispatcher("login.jsp");
                     requestDispatcher.include(req,resp);
                     break;
                 case -1:
@@ -106,9 +111,9 @@ public class ControllerServlet extends HttpServlet {
 
                     req.setAttribute("account",account);
                     req.setAttribute("role",role);
-                    logid = logService.insert(username,"");
+                    logid = logService.insert(username,"login");
                     req.setAttribute("logId",logid);
-                    requestDispatcher = req.getRequestDispatcher("/web/user.jsp");
+                    requestDispatcher = req.getRequestDispatcher("user.jsp");
                     requestDispatcher.include(req,resp);
                     break;
 
@@ -124,8 +129,8 @@ public class ControllerServlet extends HttpServlet {
         long idLog = Integer.parseInt(hidden);
         try {
             LogService logService = new LogServiceImp();
-            logService.update(idLog,"");
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/web/login.jsp");
+            logService.update(idLog,"logout");
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("login.jsp");
             requestDispatcher.include(req,resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);

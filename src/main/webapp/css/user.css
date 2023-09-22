@@ -1,0 +1,51 @@
+body {
+    background-color: #f2f2f2;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+
+
+.data-container label {
+    font-weight: bold;
+    margin-right: 10px;
+    text-align: left;
+}
+
+.data-container input[type="text"],
+.data-container input[type="password"] {
+    padding: 5px;
+    width: 60%;
+}
+
+/*.data-container span {*/
+/*    background-color: #f9f9f9;*/
+/*    padding: 5px;*/
+/*}*/
+
+.button-container {
+    text-align: left;
+    margin-top: 10px;
+    margin-left: 70px;
+}
+
+.button-container input {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: #fff;
+}
+
+
+.data-container {
+    text-align: left;
+    margin-left: 20px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+}

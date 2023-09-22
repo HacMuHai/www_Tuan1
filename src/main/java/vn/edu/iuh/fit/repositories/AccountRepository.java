@@ -94,6 +94,8 @@ public class AccountRepository {
 
     public int login(String id, String password) throws SQLException {
         Account account = getOne(id);
+        if(account == null)
+            return 0;
         if (account.getPassword().contentEquals(password)) {
             if (isAdmin(id))
                 return 1; // la admin
