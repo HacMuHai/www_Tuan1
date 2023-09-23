@@ -30,6 +30,11 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
+    public boolean update(Account account) throws SQLException {
+        return accountRepository.update(account);
+    }
+
+    @Override
     public boolean isAdmin(String acountID) throws SQLException {
         return accountRepository.isAdmin(acountID);
     }

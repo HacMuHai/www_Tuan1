@@ -44,7 +44,6 @@ public class AccountRepository {
         statement.setString(6, account.getAccount_id());
 
         return statement.executeUpdate() > 0;
-
     }
 
     public boolean delete(String id) throws SQLException {

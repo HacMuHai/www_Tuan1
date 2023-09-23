@@ -1,46 +1,71 @@
+/* CSS mới */
 body {
     background-color: #f2f2f2;
+    font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
 }
 
-h1 {
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.form-container {
+    border: 2px solid #333;
+    padding: 20px;
+    width: 80%; /* Để rộng ra, bạn có thể thay đổi giá trị này */
+    max-width: 800px; /* Để giới hạn chiều rộng tối đa của khung */
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
     text-align: center;
-    color: #333;
+    margin-top: 0;
 }
 
+.form-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+}
 
+.input-container {
+    width: 48%;
+    margin-bottom: 10px;
+    text-align: center; /* Căn giữa nội dung trong .input-container */
+}
 
-.data-container label {
+.input-container label {
+    display: block;
+    text-align: center;
     font-weight: bold;
-    margin-right: 10px;
-    text-align: left;
 }
 
-.data-container input[type="text"],
-.data-container input[type="password"] {
+.input-container input[type="text"],
+.input-container input[type="password"] {
     padding: 5px;
-    width: 60%;
+    width: 100%;
+    display: block;
+    margin: 0 auto;
 }
 
 .button-container {
-    text-align: left;
-    margin-top: 10px;
-    margin-left: 70px;
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
 }
 
 .button-container input {
     padding: 10px 20px;
-    margin-left: 10px;
+    margin: 0 5px;
     border: none;
     border-radius: 3px;
     cursor: pointer;
-    background-color: #007BFF;
+    background-color: #0077ff;
     color: #fff;
-}
-
-
-.data-container {
-    text-align: left;
-    margin-left: 20px;
-    margin-right: 5px;
-    margin-bottom: 10px;
 }
