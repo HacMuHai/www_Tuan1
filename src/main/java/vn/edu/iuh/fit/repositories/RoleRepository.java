@@ -14,6 +14,8 @@ public class RoleRepository {
         connection = ConnectDB.getConnectDB().getConnect();
     }
 
+
+
     public boolean insert(Role role) {
         String sql = "INSERT role VALUES(?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

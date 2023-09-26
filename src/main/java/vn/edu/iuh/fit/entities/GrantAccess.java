@@ -12,9 +12,11 @@ public class GrantAccess {
 
     }
 
-    public GrantAccess(String role_id, String account_id) {
-        this.roleID = role_id;
-        this.accountID = account_id;
+    public GrantAccess(String roleID, String accountID, IsGrant isGrant, String note) {
+        this.roleID = roleID;
+        this.accountID = accountID;
+        this.isGrant = isGrant;
+        this.note = note;
     }
 
     public String getRoleIDd() {

@@ -6,6 +6,7 @@ import vn.edu.iuh.fit.services.AccountService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 public class AccountServiceImp implements AccountService {
     private AccountRepository accountRepository;
@@ -20,7 +21,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public List<Account> getAll() throws SQLException {
+    public Map<Account,String> getAll() throws SQLException {
         return accountRepository.getAll();
     }
 
@@ -30,12 +31,17 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
+    public boolean insert(Account account) throws SQLException {
+        return accountRepository.insert(account);
+    }
+
+    @Override
     public boolean update(Account account) throws SQLException {
         return accountRepository.update(account);
     }
 
     @Override
-    public boolean isAdmin(String acountID) throws SQLException {
+    public int isAdmin(String acountID) throws SQLException {
         return accountRepository.isAdmin(acountID);
     }
 

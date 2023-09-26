@@ -6,17 +6,22 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import vn.edu.iuh.fit.entities.Account;
+import vn.edu.iuh.fit.entities.*;
 import vn.edu.iuh.fit.services.AccountService;
+import vn.edu.iuh.fit.services.GrantAccessService;
 import vn.edu.iuh.fit.services.LogService;
+import vn.edu.iuh.fit.services.RoleService;
 import vn.edu.iuh.fit.services.imp.AccountServiceImp;
+import vn.edu.iuh.fit.services.imp.GrantAccessServiceImp;
 import vn.edu.iuh.fit.services.imp.LogServiceImp;
+import vn.edu.iuh.fit.services.imp.RoleServiceImp;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(urlPatterns = {"/controllerServlet", "/control"})
 public class ControllerServlet extends HttpServlet {
@@ -50,112 +55,316 @@ public class ControllerServlet extends HttpServlet {
                 logout(req, resp);
                 break;
             case "UPDATE":
-                try {
-                    AccountService accountService = new AccountServiceImp();
-                    LogService logService = new LogServiceImp();
-
-                    String username = req.getParameter("accountId");
-                    Account account = accountService.getOne(username);
-                    req.setAttribute("account", account);
-
-                    String role = accountService.isAdmin(account.getAccount_id()) ? "administrator" : "user";
-                    req.setAttribute("role", role);
-
-                    String hidden = req.getParameter("hiddenValue");
-                    long idLog = Integer.parseInt(hidden);
-                    req.setAttribute("logId", idLog);
-
-                    req.setAttribute("allowPasswordUpdate", true);
-                    req.getRequestDispatcher("user.jsp").forward(req, resp);
-                    break;
-                } catch (SQLException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-
+                updateUser(req,resp);
+                break;
             case "OK":
-                try {
-                    AccountService accountService = new AccountServiceImp();
-                    LogService logService = new LogServiceImp();
-
-                    String username = req.getParameter("accountId");
-                    Account accountNew = accountService.getOne(username);
-
-                    String password = req.getParameter("password");
-                    String email = req.getParameter("email");
-                    String phone = req.getParameter("phone");
-                    accountNew.setPassword(password);
-                    accountNew.setEmail(email);
-                    accountNew.setPhone(phone);
-                    req.setAttribute("account", accountNew);
-                    accountService.update(accountNew);
-
-
-                    String role = accountService.isAdmin(accountNew.getAccount_id()) ? "administrator" : "user";
-                    req.setAttribute("role", role);
-
-                    String hidden = req.getParameter("hiddenValue");
-                    long idLog = Integer.parseInt(hidden);
-                    req.setAttribute("logId", idLog);
-
-                    req.setAttribute("allowPasswordUpdate", false);
-                    req.getRequestDispatcher("user.jsp").forward(req, resp);
-                    break;
-                } catch (SQLException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-
-
+                updateUserOK(req,resp);
+                break;
+            case "ADD":
+                addAccount(req,resp);
+                break;
+            case "selectUPDATE":
+                selectUPDATE(req,resp);
+                break;
+            case "adminUPDATE":
+                adminUPDATE(req,resp);
+                break;
+//            case "DELETE":
+//                updateUserOK(req,resp);
+//                break;
+            case "CANCEL":
+                cancelUpdate(req,resp);
+                break;
+            case "CLEAR":
+                clearInfo(req,resp);
+                break;
+            case "RESET":
+                selectUPDATE(req,resp);
+                break;
         }
     }
 
-        protected void login (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void resetInfo(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        String log = req.getParameter("hiddenValue");
+        String adminId = req.getParameter("accountId");
+        String accountIdSeclect = req.getParameter("username");
+        long logId = Integer.parseInt(log);
+
+
+        RequestDispatcher requestDispatcher = null;
+        try {
+            AccountService accountService = new AccountServiceImp();
+
+            Map<Account,String> accounts = accountService.getAll();
+            Account accountSelect = accountService.getOne(accountIdSeclect);
+
+            req.setAttribute("accounts", accounts);
+            req.setAttribute("accountInfo",accountSelect);
+            req.setAttribute("allowUpdate",true);
+            req.setAttribute("logId", logId);
+            req.setAttribute("adminId", adminId);
+
+            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private void cancelUpdate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        String log = req.getParameter("hiddenValue");
+        String adminId = req.getParameter("accountId");
+        long logId = Integer.parseInt(log);
+
+
+        RequestDispatcher requestDispatcher = null;
+        try {
+            AccountService accountService = new AccountServiceImp();
+
+            Map<Account,String> accounts = accountService.getAll();
+
+            req.setAttribute("accounts", accounts);
+            req.setAttribute("logId", logId);
+            req.setAttribute("adminId", adminId);
+
+            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void adminUPDATE(HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException{
+        String log = req.getParameter("hiddenValue");
+        String adminId = req.getParameter("accountId");
+        long logId = Integer.parseInt(log);
+
+        String accID = req.getParameter("username");
+        String fullName = req.getParameter("fullName");
+        String password = req.getParameter("password");
+        String email = req.getParameter("email");
+        String phone = req.getParameter("phone");
+        String status = req.getParameter("status");
+        String role = req.getParameter("role");
+
+        RequestDispatcher requestDispatcher = null;
+        try{
+            AccountService accountService = new AccountServiceImp();
+            GrantAccessService grantAccessService = new GrantAccessServiceImp();
+
+            boolean result;
+            try {
+                result = accountService.update(new Account(accID,fullName,password,email,phone, Status.fromValue(Integer.parseInt(status))));
+            }catch (SQLException e){
+                result = false;
+            }
+            if(result){
+                grantAccessService.update(new GrantAccess(role,accID, IsGrant.enable,""));
+            }else{
+                req.setAttribute("resultAdd",result);
+            }
+
+            Map<Account,String> accounts = accountService.getAll();
+
+            req.setAttribute("accounts", accounts);
+            req.setAttribute("logId", logId);
+            req.setAttribute("adminId", adminId);
+
+            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void selectUPDATE(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        String log = req.getParameter("hiddenValue");
+        String adminId = req.getParameter("accountId");
+        String accountIdSeclect = req.getParameter("accountIdSeclect");
+        long logId = Integer.parseInt(log);
+
+
+        RequestDispatcher requestDispatcher = null;
+        try {
+            AccountService accountService = new AccountServiceImp();
+
+            Map<Account,String> accounts = accountService.getAll();
+            Account accountSelect = accountService.getOne(accountIdSeclect);
+
+            req.setAttribute("accounts", accounts);
+            req.setAttribute("accountInfo",accountSelect);
+            req.setAttribute("allowUpdate",true);
+            req.setAttribute("logId", logId);
+            req.setAttribute("adminId", adminId);
+
+            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private void clearInfo(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String log = req.getParameter("hiddenValue");
+        String adminId = req.getParameter("accountId");
+        long logId = Integer.parseInt(log);
+
+
+        RequestDispatcher requestDispatcher = null;
+        try {
+            AccountService accountService = new AccountServiceImp();
+
+            Map<Account,String> accounts = accountService.getAll();
+
+            req.setAttribute("accounts", accounts);
+            req.setAttribute("logId", logId);
+            req.setAttribute("adminId", adminId);
+
+            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addAccount(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String log = req.getParameter("hiddenValue");
+        String adminId = req.getParameter("accountId");
+        long logId = Integer.parseInt(log);
+
+        String accID = req.getParameter("username");
+        String fullName = req.getParameter("fullName");
+        String password = req.getParameter("password");
+        String email = req.getParameter("email");
+        String phone = req.getParameter("phone");
+        String role = req.getParameter("role");
+
+        RequestDispatcher requestDispatcher = null;
+        try{
+            AccountService accountService = new AccountServiceImp();
+            GrantAccessService grantAccessService = new GrantAccessServiceImp();
+
+            boolean result;
+            try {
+                result = accountService.insert(new Account(accID,fullName,password,email,phone, Status.ACTIVE));
+            }catch (SQLException e){
+                result = false;
+            }
+            if(result){
+                grantAccessService.insert(new GrantAccess(role,accID, IsGrant.enable,""));
+            }else{
+                req.setAttribute("resultAdd",result);
+            }
+
+            Map<Account,String> accounts = accountService.getAll();
+
+            req.setAttribute("accounts", accounts);
+            req.setAttribute("logId", logId);
+            req.setAttribute("adminId", adminId);
+
+            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateUserOK(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            AccountService accountService = new AccountServiceImp();
+            LogService logService = new LogServiceImp();
+
+            String username = req.getParameter("accountId");
+            Account accountNew = accountService.getOne(username);
+
+            String password = req.getParameter("password");
+            String email = req.getParameter("email");
+            String phone = req.getParameter("phone");
+            accountNew.setPassword(password);
+            accountNew.setEmail(email);
+            accountNew.setPhone(phone);
+            req.setAttribute("account", accountNew);
+            accountService.update(accountNew);
+
+
+            String role = accountService.isAdmin(accountNew.getAccount_id()) == 1? "administrator" : "user";
+            req.setAttribute("role", role);
+
+            String hidden = req.getParameter("hiddenValue");
+            long idLog = Integer.parseInt(hidden);
+            req.setAttribute("logId", idLog);
+
+            req.setAttribute("allowPasswordUpdate", false);
+            req.getRequestDispatcher("user.jsp").forward(req, resp);
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        try {
+            AccountService accountService = new AccountServiceImp();
+            LogService logService = new LogServiceImp();
+
+            String username = req.getParameter("accountId");
+            Account account = accountService.getOne(username);
+            req.setAttribute("account", account);
+
+            String role = "user";
+            req.setAttribute("role", role);
+
+            String hidden = req.getParameter("hiddenValue");
+            long idLog = Integer.parseInt(hidden);
+            req.setAttribute("logId", idLog);
+
+            req.setAttribute("allowPasswordUpdate", true);
+            req.getRequestDispatcher("user.jsp").forward(req,resp);
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void login (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             try {
                 RequestDispatcher requestDispatcher = null;
                 AccountService accountService = new AccountServiceImp();
                 LogService logService = new LogServiceImp();
+                GrantAccessService grantAccessService = new GrantAccessServiceImp();
 
                 String username = req.getParameter("username");
                 String password = req.getParameter("password");
                 int status = accountService.login(username, password);
                 System.out.println("status: " + status);
 
-                String row = "";
-                int i;
                 int logid;
                 switch (status) {
                     case 1:
-                        List<Account> accounts = accountService.getAll();
-                        System.out.println("Admin: " + accounts.size());
-                        row = "";
-                        i = 0;
-                        for (Account value : accounts) {
-                            row += "<tr>" +
-                                    "<td>" + ++i + "</td>" +
-                                    "<td>" + value.getAccount_id() + "</td>" +
-                                    "<td>" + value.getFull_name() + "</td>" +
-                                    "<td><input class=\"edit-input\" type=\"password\" value=\"" + value.getPassword() + "\"></td>" +
-                                    "<td>" + value.getEmail() + "</td>" +
-                                    "<td>" + value.getPhone() + "</td>" +
-                                    "<td>" +
-                                    "<input type=\"checkbox\" name=\"selectRow\">" +
-                                    "</td>" +
-                                    "</tr>";
-                        }
+                        Map<Account,String> accounts = accountService.getAll();
+                        List<GrantAccess> grantAccesses = grantAccessService.getAll();
+
                         logid = logService.insert(username, "login");
-                        req.setAttribute("rows", row);
+
+                        req.setAttribute("accounts", accounts);
+                        req.setAttribute("grantAccesses", grantAccesses);
                         req.setAttribute("logId", logid);
+                        req.setAttribute("adminId", username);
                         requestDispatcher = req.getRequestDispatcher("admin.jsp");
                         requestDispatcher.include(req, resp);
                         break;
                     case 0:
-                        req.setAttribute("loginError", "Tên đăng nhập hoặc mật khẩu không đúng");
+                        req.setAttribute("loginError", "Username or password is incorrect");
                         requestDispatcher = req.getRequestDispatcher("login.jsp");
                         requestDispatcher.include(req, resp);
                         break;
                     case -1:
                         Account account = accountService.getOne(username);
                         System.out.println("user: " + account.getAccount_id());
-                        String role = accountService.isAdmin(account.getAccount_id()) ? "administrator" : "user";
+                        System.out.println("statusss: " + account.getStatus().getValue());
+                        String role = "user";
 
                         req.setAttribute("account", account);
                         req.setAttribute("role", role);
@@ -171,19 +380,19 @@ public class ControllerServlet extends HttpServlet {
             }
         }
 
-        protected void logout (HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException {
-            String hidden = req.getParameter("hiddenValue");
-            System.out.println(hidden);
-            long idLog = Integer.parseInt(hidden);
-            try {
-                LogService logService = new LogServiceImp();
-                logService.update(idLog, "logout");
-                RequestDispatcher requestDispatcher = req.getRequestDispatcher("login.jsp");
-                requestDispatcher.include(req, resp);
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+    protected void logout (HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException {
+        String hidden = req.getParameter("hiddenValue");
+        System.out.println(hidden);
+        long idLog = Integer.parseInt(hidden);
+        try {
+            LogService logService = new LogServiceImp();
+            logService.update(idLog, "logout");
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("login.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
-
     }
+
+}
 

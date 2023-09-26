@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AccountRepository {
     private Connection connection;
@@ -56,18 +58,22 @@ public class AccountRepository {
 
     }
 
-    public List<Account> getAll() throws SQLException {
-        String sql = "SELECT * FROM account";
+    public Map<Account,String> getAll() throws SQLException {
+        String sql = "SELECT * FROM account JOIN grant_access\n" +
+                "\tWHERE account.account_id = grant_access.account_id\n" +
+                "\tORDER BY account.`status`DESC, grant_access.role_id";
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet rs = statement.executeQuery();
-        List<Account> list = new ArrayList<>();
+        Map<Account,String> list = new LinkedHashMap<>();
+        Account account;
         while (rs.next()) {
-            list.add(new Account(rs.getString("account_id"),
+            account = new Account(rs.getString("account_id"),
                     rs.getString("full_name"),
                     rs.getString("password"),
                     rs.getString("email"),
                     rs.getString("phone"),
-                    Status.values()[rs.getInt("status")]));
+                    Status.fromValue(rs.getInt("status")));
+            list.put(account, rs.getString("role_id"));
         }
         return list;
 
@@ -84,10 +90,10 @@ public class AccountRepository {
                     rs.getString("password"),
                     rs.getString("email"),
                     rs.getString("phone"),
-                    Status.values()[rs.getInt("status")]);
+                    Status.fromValue(rs.getInt("status")));
+
         }
         return null;
-
     }
 
 
@@ -96,22 +102,21 @@ public class AccountRepository {
         if(account == null)
             return 0;
         if (account.getPassword().contentEquals(password)) {
-            if (isAdmin(id))
-                return 1; // la admin
-            return -1; //la user
+            return isAdmin(id);
         } else {
             return 0; // Tai khoan khong ton tai
         }
     }
 
-    public boolean isAdmin(String acountID) throws SQLException {
-        String sql = "SELECT * FROM grant_access \n" +
-                "\tWHERE account_id = ? AND is_grant = 1 \n" +
-                "\t\t\tAND role_id IN (SELECT role_id FROM role WHERE role_name = 'administrator')";
+    public int isAdmin(String acountID) throws SQLException {
+        String sql = "SELECT * FROM grant_access\n" +
+                "    WHERE is_grant = 1 AND account_id = (SELECT account_id FROM account WHERE account_id = ? AND `status` = 1)";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, acountID);
         ResultSet rs = statement.executeQuery();
-        return rs.next();
+        if(!rs.next())
+            return 0;
+        return rs.getString("role_id").equals("admin")? 1 : -1;
 
     }
 }

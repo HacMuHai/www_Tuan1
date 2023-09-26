@@ -12,6 +12,13 @@ public class Role {
         this.roleId = roleId;
     }
 
+    public Role(String roleId, String roleName, String description, Status status) {
+        this.roleId = roleId;
+        this.roleName = roleName;
+        this.description = description;
+        this.status = status;
+    }
+
     public String getRoleId() {
         return roleId;
     }
