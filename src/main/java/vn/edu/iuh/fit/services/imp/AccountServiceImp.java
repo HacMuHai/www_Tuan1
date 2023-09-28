@@ -41,6 +41,11 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
+    public boolean delete(String id) throws SQLException {
+        return accountRepository.delete(id);
+    }
+
+    @Override
     public int isAdmin(String acountID) throws SQLException {
         return accountRepository.isAdmin(acountID);
     }

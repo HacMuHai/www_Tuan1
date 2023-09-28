@@ -35,6 +35,11 @@ public class GrantAccessServiceImp implements GrantAccessService {
     }
 
     @Override
+    public boolean changeRole(GrantAccess grantAccess) {
+        return grantAccessRepository.changeRole(grantAccess);
+    }
+
+    @Override
     public boolean delete(String id) {
         return grantAccessRepository.delete(id);
     }

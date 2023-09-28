@@ -81,8 +81,26 @@ public class GrantAccessRepository {
         }
     }
 
+    public boolean changeRole(GrantAccess grantAccess) {
+        String sql = "UPDATE grant_access "  +
+                " SET is_grant=?, note=?,role_id = ?  " +
+                " WHERE  account_id=?";
+        try(PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1, grantAccess.getGrant());
+            statement.setString(2, grantAccess.getNote());
+            statement.setString(3, grantAccess.getRoleIDd());
+            statement.setString(4, grantAccess.getAccountID());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean delete(String id) {
-        String sql = "DELETE FROM grant_access WHERE account_id=?";
+        String sql = "UPDATE grant_access \n" +
+                "SET is_grant = 1\n" +
+                "WHERE account_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id);
             return statement.executeUpdate()>0;

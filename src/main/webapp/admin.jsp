@@ -16,8 +16,9 @@
 
     Boolean allowUpdate = (Boolean) request.getAttribute("allowUpdate");
     Boolean resultAdd = (Boolean) request.getAttribute("resultAdd");
+    String messError = (String) request.getAttribute("messError");
 
-    Boolean showInfo = false;
+    boolean showInfo = false;
     String roleValue = "admin";
     int statusValue = 1;
     if(accountInfo != null){
@@ -32,13 +33,16 @@
     if (resultAdd == null) {
         resultAdd = true;
     }
+    if(messError == null){
+        messError = "";
+    }
 
 
 %>
 
 <body>
 <div class="container">
-    <h2 class="title-admin">Page Admin</h2>
+    <h2 class="title-admin">Page Admin ${adminId}</h2>
     <div class="table-container">
         <table>
             <thead class="sticky-header">
@@ -147,8 +151,8 @@
 </div>
 
 <script>
-    if(<%= !resultAdd %>)
-        alert("username already exists")
+    if(<%= !messError.isEmpty() %>)
+        alert(<%="\""+messError+"\""%>)
     function validateForm() {
         var actionElement = document.querySelector('button[name="action"]:checked');
         var userName = document.getElementById("userName").value.trim();
@@ -166,7 +170,7 @@
         return true;
     }
     function cancelAction() {
-        document.getElementById("myForm").reset(); // Xóa giá trị trong trường nhập liệu
+        document.getElementById("myForm").reset();
     }
     function submitForm(){
         document.getElementById("userName").value = "a"
@@ -175,7 +179,7 @@
         document.getElementById("email").value = "a"
         document.getElementById("phone").value = "a"
 
-        document.getElementById("myForm").onsubmit; // Xóa giá trị trong trường nhập liệu
+        document.getElementById("myForm").onsubmit;
     }
 </script>
 

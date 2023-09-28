@@ -48,7 +48,7 @@ tbody {
 .sticky-header {
     position: sticky;
     top: 0;
-    background-color: 0077ff;
+    background-color: #0077ff;
     z-index: 1;
 }
 
@@ -69,6 +69,11 @@ th:last-child,
 td:last-child {
     text-align: center;
     width: 1%;
+    white-space: nowrap;
+}
+th:nth-child(8),
+td:nth-child(8) {
+    width: 8%;
     white-space: nowrap;
 }
 

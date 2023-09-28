@@ -9,6 +9,7 @@ import java.util.Map;
 public interface AccountService {
     public int login(String id,String password) throws SQLException;
     public boolean update(Account account) throws SQLException;
+    public boolean delete(String id) throws SQLException;
     public Map<Account,String> getAll() throws SQLException;
     public Account getOne(String id) throws SQLException;
     public boolean insert(Account account) throws SQLException;

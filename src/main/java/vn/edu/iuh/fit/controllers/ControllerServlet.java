@@ -69,9 +69,9 @@ public class ControllerServlet extends HttpServlet {
             case "adminUPDATE":
                 adminUPDATE(req,resp);
                 break;
-//            case "DELETE":
-//                updateUserOK(req,resp);
-//                break;
+            case "deleteUSER":
+                deleteUser(req,resp);
+                break;
             case "CANCEL":
                 cancelUpdate(req,resp);
                 break;
@@ -79,8 +79,41 @@ public class ControllerServlet extends HttpServlet {
                 clearInfo(req,resp);
                 break;
             case "RESET":
-                selectUPDATE(req,resp);
+                resetInfo(req,resp);
                 break;
+        }
+    }
+
+    private void deleteUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        String log = req.getParameter("hiddenValue");
+        String adminId = req.getParameter("accountId");
+        String accountIdSeclect = req.getParameter("accountIdSeclect");
+        long logId = Integer.parseInt(log);
+
+
+        RequestDispatcher requestDispatcher = null;
+        try{
+            AccountService accountService = new AccountServiceImp();
+            GrantAccessService grantAccessService = new GrantAccessServiceImp();
+
+
+            if(!accountIdSeclect.equals(adminId)){
+                accountService.delete(accountIdSeclect);
+                grantAccessService.delete(accountIdSeclect);
+            }else{
+                req.setAttribute("messError","cannot delete your own account");
+            }
+
+            Map<Account,String> accounts = accountService.getAll();
+
+            req.setAttribute("accounts", accounts);
+            req.setAttribute("logId", logId);
+            req.setAttribute("adminId", adminId);
+
+            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher.include(req, resp);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -160,7 +193,10 @@ public class ControllerServlet extends HttpServlet {
                 result = false;
             }
             if(result){
-                grantAccessService.update(new GrantAccess(role,accID, IsGrant.enable,""));
+                if(status.equals("1"))
+                    grantAccessService.changeRole(new GrantAccess(role,accID, IsGrant.enable,""));
+                else
+                    grantAccessService.changeRole(new GrantAccess(role,accID, IsGrant.disable,""));
             }else{
                 req.setAttribute("resultAdd",result);
             }
@@ -256,6 +292,8 @@ public class ControllerServlet extends HttpServlet {
                 grantAccessService.insert(new GrantAccess(role,accID, IsGrant.enable,""));
             }else{
                 req.setAttribute("resultAdd",result);
+                req.setAttribute("messError","username already exists");
+
             }
 
             Map<Account,String> accounts = accountService.getAll();

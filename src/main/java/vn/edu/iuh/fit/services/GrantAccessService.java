@@ -10,5 +10,6 @@ public interface GrantAccessService {
     public List<GrantAccess> getAll() throws SQLException;
     public boolean insert(GrantAccess grantAccess);
     public boolean update(GrantAccess grantAccess);
+    public boolean changeRole(GrantAccess grantAccess);
     public boolean delete(String id);
 }
