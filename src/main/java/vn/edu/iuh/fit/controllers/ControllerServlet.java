@@ -110,7 +110,7 @@ public class ControllerServlet extends HttpServlet {
             req.setAttribute("logId", logId);
             req.setAttribute("adminId", adminId);
 
-            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
             requestDispatcher.include(req, resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -137,7 +137,7 @@ public class ControllerServlet extends HttpServlet {
             req.setAttribute("logId", logId);
             req.setAttribute("adminId", adminId);
 
-            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
             requestDispatcher.include(req, resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -161,7 +161,7 @@ public class ControllerServlet extends HttpServlet {
             req.setAttribute("logId", logId);
             req.setAttribute("adminId", adminId);
 
-            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
             requestDispatcher.include(req, resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -207,7 +207,7 @@ public class ControllerServlet extends HttpServlet {
             req.setAttribute("logId", logId);
             req.setAttribute("adminId", adminId);
 
-            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
             requestDispatcher.include(req, resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -234,7 +234,7 @@ public class ControllerServlet extends HttpServlet {
             req.setAttribute("logId", logId);
             req.setAttribute("adminId", adminId);
 
-            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
             requestDispatcher.include(req, resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -258,7 +258,7 @@ public class ControllerServlet extends HttpServlet {
             req.setAttribute("logId", logId);
             req.setAttribute("adminId", adminId);
 
-            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
             requestDispatcher.include(req, resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -302,7 +302,7 @@ public class ControllerServlet extends HttpServlet {
             req.setAttribute("logId", logId);
             req.setAttribute("adminId", adminId);
 
-            requestDispatcher = req.getRequestDispatcher("admin.jsp");
+            requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
             requestDispatcher.include(req, resp);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -390,7 +390,7 @@ public class ControllerServlet extends HttpServlet {
                         req.setAttribute("grantAccesses", grantAccesses);
                         req.setAttribute("logId", logid);
                         req.setAttribute("adminId", username);
-                        requestDispatcher = req.getRequestDispatcher("admin.jsp");
+                        requestDispatcher = req.getRequestDispatcher("dashboard.jsp");
                         requestDispatcher.include(req, resp);
                         break;
                     case 0:
@@ -427,6 +427,7 @@ public class ControllerServlet extends HttpServlet {
             logService.update(idLog, "logout");
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("login.jsp");
             requestDispatcher.include(req, resp);
+
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
